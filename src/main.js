@@ -2,8 +2,6 @@
   var osc1 = new Oscillator();
   var osc2 = new Oscillator();
 
-  osc1.setType('sawtooth');
-
   osc1.setFrequency(300)
   osc1.setDetune(0.2);
 
