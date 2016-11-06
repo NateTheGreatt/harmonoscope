@@ -1,6 +1,8 @@
-var ToroidModule = function() {
+// var ToroidModule = function() {
   var osc1 = new Oscillator();
   var osc2 = new Oscillator();
+
+  osc1.setType('sawtooth');
 
   osc1.setFrequency(300)
   osc1.setDetune(0.2);
@@ -17,6 +19,6 @@ var ToroidModule = function() {
   osc2.start();
 
   vectorscope.draw();
-}
-
-var toroid = new ToroidModule();
+// }
+//
+// var toroid = new ToroidModule();
