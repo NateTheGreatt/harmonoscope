@@ -15,8 +15,8 @@ var Vectorscope = function(w,h,options) {
   splitter.connect(analyser1,0,0);
   splitter.connect(analyser2,1,0);
 
-  analyser1.fftSize = 4096; // must be power of two
-  analyser2.fftSize = 4096; // and max of 32768
+  analyser1.fftSize = Math.pow(2,12); // must be power of two
+  analyser2.fftSize = Math.pow(2,12); // and max of 32768
 
   var binCount = analyser1.frequencyBinCount;
   var wave1 = new Uint8Array(binCount);
@@ -37,7 +37,7 @@ var Vectorscope = function(w,h,options) {
   if(!options) options = {};
 
   var opts = {
-  	scale: options.scale || 0.33,
+  	scale: options.scale || 1,
   	style: options.style || 'lines',
   	thickness: options.thickness || 1.0,
   	color: options.color || "#000000",
@@ -49,6 +49,8 @@ var Vectorscope = function(w,h,options) {
     ch1.connect(splitter);
     ch2.connect(splitter);
   };
+
+  this.add = node => node.connect(splitter)
 
   this.draw = function() {
 
@@ -74,9 +76,8 @@ var Vectorscope = function(w,h,options) {
 
       if(opts.style == 'lines') {
         canvasCtx.lineTo(x,y);
-      }
-      if(opts.style == 'dots') {
-        canvasCtx.arc(x, y, 1, 0, 2 * Math.PI, true);
+      } else if(opts.style == 'dots') {
+        canvasCtx.arc(x, y, opts.thickness, 0, 2 * Math.PI, true);
       }
 
     }

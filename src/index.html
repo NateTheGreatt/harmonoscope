@@ -4,16 +4,17 @@
 body {
   position: relative;
 }
-#canvas {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  margin: -100px 0 0 -100px;
+.oscillator {
+  display: inline-block;
 }
 </style>
 </head>
 <body>
+  
   <canvas id="canvas"></canvas>
+
+  <button onclick="createOscillator()">+</button>
+  
   <script src="Oscillator.js"></script>
   <script src="Vectorscope.js"></script>
   <script src="main.js"></script>
