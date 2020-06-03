@@ -1,88 +1,116 @@
-var audio = new (window.AudioContext || window.webkitAudioContext)();
+const Oscillator = (audio) => {
 
-var Oscillator = function() {
+  let frequency = 0
+  let detune = 0
+  let finetune = 0
+  let type = 'sine'
+  let volume = 0.5
+  let amFrequency = 0
+  let phaseOffset = 0
 
-  this.frequency = 200;
-  this.detune = 0;
-  this.fine = 0;
-  this.type = 'sine';
-  this.volume = 0.5;
-  this.lfoSpeed = 5;
-  this.phaseOffset = 0;
+  const oscL = audio.createOscillator()
+  const oscR = audio.createOscillator()
+  const merger = audio.createChannelMerger(2)
+  const gainNode = audio.createGain()
 
-  var OscL = audio.createOscillator();
-  var OscR = audio.createOscillator();
-  var merger = audio.createChannelMerger(2);
-  var gainNode = audio.createGain();
+  const amplitudeModulator = audio.createOscillator()
+  amplitudeModulator.type = 'sine'
+  amplitudeModulator.frequency.value = amFrequency
 
-  var lfo = audio.createOscillator();
-  lfo.type = 'sine';
-  lfo.frequency.value = this.lfoSpeed;
-  lfo.start();
+  const amGain = audio.createGain()
+  amGain.gain.value = 0.5
 
-  var lfoGain = audio.createGain();
-  lfoGain.gain.value = 0.5;
+  const delayR = audio.createDelay()
+  delayR.delayTime.value = 0 
 
-  var delay = audio.createDelay();
-  delay.delayTime.value = 0;
+  const delayL = audio.createDelay()
+  delayL.delayTime.value = 0
 
-  this.connect = function(node) {
-    gainNode.connect(node);
+  const connect = (node) => {
+    gainNode.connect(node)
   }
 
-  this.setPhaseOffset = function(x) {
-    this.phaseOffset = x;
-    delay.delayTime.value = x;
+  const setPhase = (x) => {
+    if(frequency==0)return
+    phaseOffset = x
+    delayL.delayTime.value = x/frequency
+    delayR.delayTime.value = -x/frequency
   }
 
-  this.setLfoSpeed = function(x) {
-    this.lfoSpeed = x;
-    lfo.frequency.value = x;
+  const setAM = (x) => {
+    amFrequency = x
+    amplitudeModulator.frequency.value = x
   }
 
-  this.setType = function(x) {
-    this.type = x;
-    OscL.type = x;
-    OscR.type = x;
+  const setType = (x) => {
+    type = x
+    oscL.type = x
+    oscR.type = x
   }
 
-  this.setVolume = function(x) {
-    this.volume = x;
-    gainNode.gain.value = x;
-  };
-
-  this.setFrequency = function(x) {
-    this.frequency = x;
-    OscL.frequency.value = x;
-    OscR.frequency.value = x;
-  };
-
-  this.setDetune = function(x) {
-    this.detune = x;
-    OscL.detune.value = x;
-    OscR.detune.value = -x;
-  };
-
-  this.setFine = function(x) {
-    this.fine = x;
-    OscL.frequency.value += x;
-    OscR.frequency.value += x;
-  };
-
-  this.start = function() {
-    OscL.start();
-    OscR.start();
+  const setVolume = (x) => {
+    volume = x
+    gainNode.gain.value = x
   }
 
-  this.setType(this.type);
-  this.setFrequency(this.frequency);
-  this.setVolume(this.volume);
+  const setFrequency = (x) => {
+    frequency = x
+    oscL.frequency.value = x
+    oscR.frequency.value = x
+    setPhase(phaseOffset)
+  }
 
-  merger.connect(gainNode);
-  lfo.connect(lfoGain);
-  // lfoGain.connect(gainNode.gain);
-  OscL.connect(merger,0,0);
-  OscR.connect(delay);
-  delay.connect(merger,0,1);
+  const setDetune = (x) => {
+    detune = x
+    oscL.detune.value = x
+    oscR.detune.value = -x
+  }
 
-};
+  const setFinetune = (x) => {
+    finetune = x
+    oscL.frequency.value = frequency - finetune
+    oscR.frequency.value = frequency - finetune
+  }
+
+  const start = () => {
+    oscL.start()
+    oscR.start()
+  }
+
+  let amEnabled = false
+  const toggleAM = () => {
+    if(amEnabled) amplitudeModulator.stop()
+    else amplitudeModulator.start()
+    amEnabled = !amEnabled
+  }
+
+  setType(type)
+  setFrequency(frequency)
+  setVolume(volume)
+
+  merger.connect(gainNode)
+
+  amplitudeModulator.connect(amGain)
+  amGain.connect(gainNode.gain)
+  
+  oscL.connect(delayL)
+  delayL.connect(merger,0,0)
+
+  oscR.connect(delayR)
+  delayR.connect(merger,0,1)
+
+  return {
+    connect,
+    setPhase,
+    setAM,
+    setType,
+    setVolume,
+    setFrequency,
+    setDetune,
+    setFinetune,
+    toggleAM,
+    start
+  }
+}
+
+export { Oscillator }
