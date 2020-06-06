@@ -23,7 +23,7 @@
 
   const set = (prop) => {
     let fnName = capitalize(prop)
-    osc[`set${fnName}`](options[prop].value)
+    osc[`set${fnName}`](parseFloat(options[prop].value))
   }
 
   const reset = prop => {
@@ -70,7 +70,11 @@
     {#each Object.keys(options) as prop}
       <div class="slidecontainer">
         <div>{prop}</div> 
-        <div><input type=text bind:value={options[prop].value} on:input={set(prop)}></div> 
+        <div class="inputs">
+          <input type=text bind:value={options[prop].min}>
+          <input type=text bind:value={options[prop].value} on:input={set(prop)}>
+          <input type=text bind:value={options[prop].max}>
+        </div> 
         <input type=range
           min={options[prop].min}
           max={options[prop].max}
@@ -114,6 +118,9 @@ oscillatorcontrols {
 }
 .slidecontainer > input {
   width: 100%;
+}
+.slidecontainer .inputs input {
+  width: 6em;
 }
 .slidecontainer > span {
   background-color: rgba(0,0,0,0.5);

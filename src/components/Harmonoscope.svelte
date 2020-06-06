@@ -38,16 +38,15 @@
   let gif, animationFrameId
 
   const addGifFrame = () => {
-    gif.addFrame(canvas, {delay: 16.6, copy: true, width, height})
+    gif.addFrame(canvas, {delay: 16.666, copy: true, width, height})
     animationFrameId = window.requestAnimationFrame(addGifFrame)
-    console.log('aaa')
   }
 
   const gifStart = () => {
     gif = new GIF({
       workerScript: '/build/gif.worker.js',
-      workers: 2,
-      quality: 10
+      workers: 8,
+      quality: 100
     })
     
     gif.on('finished', blob => {
