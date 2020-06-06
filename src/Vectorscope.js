@@ -1,14 +1,14 @@
-const Vectorscope = (audio, canvas, options={}) => {
+const Vectorscope = (audio, canvas, _options={}) => {
 
-  const opts = {
+  let opts = {
     width: canvas.width || 200,
     height: canvas.height || 200,
-  	scale: options.scale || 1,
-  	style: options.style || 'lines',
-  	thickness: options.thickness || 1.0,
-  	color: options.color || "#rgba(0,0,0,1)",
-  	bgColor: options.bgColor || 'rgba(255,255,255,0.33)',
-  	trail: options.trail || 1
+  	scale: _options.scale || 1,
+  	style: _options.style || 'lines',
+  	thickness: _options.thickness || 1.0,
+  	color: _options.color || "#rgba(0,0,0,1)",
+  	bgColor: _options.bgColor || 'rgba(255,255,255,0.33)',
+  	trail: _options.trail || 1
   }
 
   const canvasCtx = canvas.getContext("2d")
@@ -91,10 +91,13 @@ const Vectorscope = (audio, canvas, options={}) => {
 
   }
 
+  const options = o => Object.assign(opts, o)
+
   return {
     setChannels,
     add,
-    draw
+    draw,
+    options
   }
 
 }

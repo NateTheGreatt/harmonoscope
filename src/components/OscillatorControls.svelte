@@ -44,6 +44,10 @@
     else osc.connect(audio.destination)
   }
 
+  const setType = () => {
+    osc.setType(osc.type)
+  }
+
   onMount(() => {
     osc.start()
     osc.connect(audio.destination)
@@ -53,7 +57,13 @@
 <oscillatorcontrols>
   <div class="oscillator">
     <div id="header">
-      Oscillator {i}
+      <select bind:value={osc.type} on:change={setType}>
+        <option value='sine'>sine</option>
+        <option value='square'>square</option>
+        <option value='sawtooth'>sawtooth</option>
+        <option value='triangle'>triangle</option>
+      </select>
+      <b>Oscillator {i}</b>
       <button on:click={toggleMute}>{mute ? 'Unmute' : 'Mute'}</button>
       <button on:click={remove(osc)}>Remove</button>
     </div>
@@ -91,7 +101,7 @@ hr {
   background-color: rgba(0,0,0,0.2);
   padding: 5px;
 }
-#header button {
+#header button, select {
   height: 24px;
   font-size: 14px;
   padding: 2px;

@@ -18,7 +18,7 @@
     if(started) return
     vectorscope = Vectorscope(audio, canvas, {
       scale: 1,
-      style: 'lines',
+      style: 'dots',
       thickness: 1,
       color: '#FFFFFF',
       bgColor: 'rgba(0,0,0,1)'
@@ -76,12 +76,23 @@
     oscillators = oscillators.filter((o,i) => oscillators.indexOf(osc) !== i)
   }
 
+  let style = 'dots'
+  const setStyle = () => {
+    vectorscope.options({style})
+  }
+
 </script>
 
 <harmonoscope>
   <button hidden={started} on:click={start}>Start</button>
   <div hidden={!started}>
-    <canvas bind:this={canvas} width={width} height={height}></canvas>
+    <div id="canvasWrap">
+      <select bind:value={style} on:change={setStyle}>
+        <option value="dots">dots</option>
+        <option value="lines">lines</option>
+      </select>
+      <canvas bind:this={canvas} width={width} height={height}></canvas>
+    </div>
     <div id="panel">
       <span id="title">Harmonoscope</span>
       <button id="addOsc" on:click={addOsc}>Add Oscillator</button>
@@ -123,12 +134,22 @@
 #oscControls {
   margin-top: 60px;
 }
-canvas {
+#canvasWrap {
   position: fixed;
   top: 60px;
   left: 10px;
+}
+#canvasWrap canvas {
   opacity: 0.5;
   pointer-events: none;
   /* z-index: -1; */
+}
+#canvasWrap select {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  padding: 2px;
+  font-size: 10px;
 }
 </style>

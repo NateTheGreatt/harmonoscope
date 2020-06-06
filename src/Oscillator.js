@@ -110,7 +110,7 @@ const Oscillator = (audio) => {
 
   return {
 
-    frequency, detune, finetune, phase, volume,
+    frequency, detune, finetune, phase, volume, type,
 
     connect,
     disconnect,
