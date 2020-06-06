@@ -6,7 +6,7 @@ const Oscillator = (audio) => {
   let type = 'sine'
   let volume = 0.5
   let amFrequency = 0
-  let phaseOffset = 0
+  let phase = 0
 
   const oscL = audio.createOscillator()
   const oscR = audio.createOscillator()
@@ -29,12 +29,16 @@ const Oscillator = (audio) => {
   const connect = (node) => {
     gainNode.connect(node)
   }
+  const disconnect = (node) => {
+    gainNode.disconnect(node)
+  }
 
   const setPhase = (x) => {
-    if(frequency==0)return
-    phaseOffset = x
-    delayL.delayTime.value = x/frequency
-    delayR.delayTime.value = -x/frequency
+    if(oscL.frequency.value==0)return
+    if(oscR.frequency.value==0)return
+    phase = x
+    delayL.delayTime.value = x/oscL.frequency.value
+    delayR.delayTime.value = -x/oscR.frequency.value
   }
 
   const setAM = (x) => {
@@ -57,7 +61,7 @@ const Oscillator = (audio) => {
     frequency = x
     oscL.frequency.value = x
     oscR.frequency.value = x
-    setPhase(phaseOffset)
+    setPhase(phase)
   }
 
   const setDetune = (x) => {
@@ -68,13 +72,18 @@ const Oscillator = (audio) => {
 
   const setFinetune = (x) => {
     finetune = x
-    oscL.frequency.value = frequency - finetune
-    oscR.frequency.value = frequency - finetune
+    oscL.frequency.value = frequency + finetune
+    oscR.frequency.value = frequency + finetune
+    setPhase(phase)
   }
 
   const start = () => {
     oscL.start()
     oscR.start()
+  }
+  const stop = () => {
+    oscL.stop()
+    oscR.stop()
   }
 
   let amEnabled = false
@@ -100,7 +109,11 @@ const Oscillator = (audio) => {
   delayR.connect(merger,0,1)
 
   return {
+
+    frequency, detune, finetune, phase, volume,
+
     connect,
+    disconnect,
     setPhase,
     setAM,
     setType,
@@ -109,7 +122,8 @@ const Oscillator = (audio) => {
     setDetune,
     setFinetune,
     toggleAM,
-    start
+    start,
+    stop
   }
 }
 

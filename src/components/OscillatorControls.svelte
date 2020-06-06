@@ -5,13 +5,16 @@
 
   export let osc
   export let i
+  export let vectorscope
+  export let overtone
+  export let remove
 
   let options = {
-    frequency: {value: 0, min: -5000, max: 5000},
-    finetune: {value: 0, min: -10, max: 10},
-    detune: {value: 0, min: -1, max: 1},
-    phase: {value: 0, min: -1, max: 1},
-    volume: {value: 0, min: -1, max: 1}
+    frequency: {value: osc.frequency, min: -5000, max: 5000},
+    finetune: {value: osc.finetune, min: -10, max: 10},
+    // detune: {value: osc.detune, min: -1, max: 1},
+    phase: {value: osc.phase, min: -1, max: 1},
+    volume: {value: osc.volume, min: -1, max: 1}
   }
 
   let overtones = []
@@ -29,20 +32,35 @@
   }
 
   const addOvertone = () => {
-    overtones.push(Oscillator(audio))
+    let overtone = Oscillator(audio)
+    overtones = [...overtones, overtone]
+    overtone.setFrequency(options.frequency.value*overtones.length+2)
+  }
+
+  let mute = false
+  const toggleMute = () => {
+    mute = !mute
+    if(mute) osc.disconnect(audio.destination)
+    else osc.connect(audio.destination)
   }
 
   onMount(() => {
     osc.start()
+    osc.connect(audio.destination)
   })
 </script>
 
 <oscillatorcontrols>
   <div class="oscillator">
-    <p>Oscillator {i}</p>
+    <div id="header">
+      Oscillator {i}
+      <button on:click={toggleMute}>{mute ? 'Unmute' : 'Mute'}</button>
+      <button on:click={remove(osc)}>Remove</button>
+    </div>
     {#each Object.keys(options) as prop}
       <div class="slidecontainer">
-        <span>{prop}</span> 
+        <div>{prop}</div> 
+        <div><input type=text bind:value={options[prop].value} on:input={set(prop)}></div> 
         <input type=range
           min={options[prop].min}
           max={options[prop].max}
@@ -54,12 +72,30 @@
         />
       </div>
     {/each}
-    <!-- <button on:click={addOvertone}>+</button>
-    <div id="overtones{i}"></div> -->
+    <button on:click={addOvertone}>Add Overtone</button>
+    <div class="overtones">
+      {#each overtones as osc,i}
+        <svelte:self osc={osc} i={i} vectorscope={vectorscope} overtone=true />
+      {/each}
+    </div>
   </div>
+  <hr />
 </oscillatorcontrols>
 
 <style scoped=true>
+hr {
+  margin: 25px 0 25px 0;
+}
+#header {
+  text-align: center;
+  background-color: rgba(0,0,0,0.2);
+  padding: 5px;
+}
+#header button {
+  height: 24px;
+  font-size: 14px;
+  padding: 2px;
+}
 oscillatorcontrols {
   text-align: center;
 }
@@ -70,6 +106,11 @@ oscillatorcontrols {
   width: 100%;
 }
 .slidecontainer > span {
-  background-color: 'rgba(0,0,0,0.5)'
+  background-color: rgba(0,0,0,0.5);
+}
+.overtones {
+  text-align: center;
+  width: 60%;
+  margin: auto;
 }
 </style>

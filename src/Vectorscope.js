@@ -6,7 +6,7 @@ const Vectorscope = (audio, canvas, options={}) => {
   	scale: options.scale || 1,
   	style: options.style || 'lines',
   	thickness: options.thickness || 1.0,
-  	color: options.color || "#000000",
+  	color: options.color || "#rgba(0,0,0,1)",
   	bgColor: options.bgColor || 'rgba(255,255,255,0.33)',
   	trail: options.trail || 1
   }
@@ -44,6 +44,8 @@ const Vectorscope = (audio, canvas, options={}) => {
 
   const add = node => node.connect(splitter)
 
+  let hsl = {h:0,s:1,l:0.5}
+
   const draw = () => {
 
     // canvasCtx.clearRect(-width,-height,width*2,height*2)
@@ -56,8 +58,14 @@ const Vectorscope = (audio, canvas, options={}) => {
     analyser1.getByteTimeDomainData(wave1)
     analyser2.getByteTimeDomainData(wave2)
 
+    if(opts.style == 'lines') 
+      canvasCtx.beginPath()
 
     for(let i=0; i<binCount; i++) {
+
+      // hsl.h = i % 360
+      // let {h,s,l} = hsl
+      // canvasCtx.strokeStyle = `hsl(${h},${s*100}%,${l*100}%)`
 
       const a = wave1[i]-128
       const b = wave2[i]-128
@@ -65,16 +73,19 @@ const Vectorscope = (audio, canvas, options={}) => {
       const x = a*opts.scale
       const y = b*opts.scale
       
-      canvasCtx.beginPath()
-
+      
       if(opts.style == 'lines') {
         canvasCtx.lineTo(x,y)
       } else if(opts.style == 'dots') {
+        canvasCtx.beginPath()
         canvasCtx.arc(x, y, opts.thickness, 0, 2 * Math.PI)
+        canvasCtx.stroke()
       }
       
-      canvasCtx.stroke()
     }
+
+    if(opts.style == 'lines') 
+      canvasCtx.stroke()
 
     window.requestAnimationFrame(draw)
 
