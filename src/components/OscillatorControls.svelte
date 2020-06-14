@@ -6,7 +6,7 @@
   export let osc
   export let i
   export let vectorscope
-  export let overtone
+  export let undertone
   export let remove
 
   let options = {
@@ -17,13 +17,20 @@
     volume: {value: osc.volume, min: -1, max: 1}
   }
 
+  if(undertone) {
+    Object.keys(options).forEach(p => {
+      options[p].value = undertone[p]
+    })
+  }
+
   let overtones = []
 
   const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
 
   const set = (prop) => {
     let fnName = capitalize(prop)
-    osc[`set${fnName}`](parseFloat(options[prop].value))
+    let fn = osc[`set${fnName}`]
+    fn(parseFloat(options[prop].value))
   }
 
   const reset = prop => {
@@ -33,8 +40,17 @@
 
   const addOvertone = () => {
     let overtone = Oscillator(audio)
+    let f = options.frequency.value*(overtones.length+2)
+    overtone.setFrequency(f)
+    overtone.setPhase(options.phase.value)
+    overtone.setVolume(options.volume.value/2)
     overtones = [...overtones, overtone]
-    overtone.setFrequency(options.frequency.value*overtones.length+2)
+  }
+
+  const removeOvertone = (overtone) => {
+    vectorscope.remove(overtone)
+    overtone.stop()
+    overtones = overtones.filter((o,i) => overtones.indexOf(overtone) !== i)
   }
 
   let mute = false
@@ -49,6 +65,14 @@
   }
 
   onMount(() => {
+    
+    // defaults
+    if(!undertone) {
+      // osc.setFrequency(100)
+      // osc.setPhase(0.25)
+    }
+
+    vectorscope.add(osc)
     osc.start()
     osc.connect(audio.destination)
   })
@@ -74,7 +98,7 @@
           <input type=text bind:value={options[prop].min}>
           <input type=text bind:value={options[prop].value} on:input={set(prop)}>
           <input type=text bind:value={options[prop].max}>
-        </div> 
+        </div>
         <input type=range
           min={options[prop].min}
           max={options[prop].max}
@@ -88,8 +112,8 @@
     {/each}
     <button on:click={addOvertone}>Add Overtone</button>
     <div class="overtones">
-      {#each overtones as osc,i}
-        <svelte:self osc={osc} i={i} vectorscope={vectorscope} overtone=true />
+      {#each overtones as overtone,i}
+        <svelte:self osc={overtone} i={i} vectorscope={vectorscope} remove={removeOvertone} undertone={osc} />
       {/each}
     </div>
   </div>

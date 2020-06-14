@@ -21,7 +21,7 @@
       style: 'dots',
       thickness: 1,
       color: '#FFFFFF',
-      bgColor: 'rgba(0,0,0,1)'
+      bgColor: 'rgba(0,0,0,0.33)'
       // trail: options.trail || 1
     })
     vectorscope.draw()
@@ -71,14 +71,25 @@
   }
 
   const remove = (osc) => {
+    vectorscope.remove(osc)
     osc.stop()
     oscillators = oscillators.filter((o,i) => oscillators.indexOf(osc) !== i)
   }
 
   let style = 'dots'
-  const setStyle = () => {
-    vectorscope.options({style})
-  }
+  const setStyle = () => vectorscope.options({style})
+
+  let scale = 1
+  const setScale = () => vectorscope.options({scale})
+  
+  let thickness = 1
+  const setThickness = () => vectorscope.options({thickness})
+
+  let trail = 1
+  const setTrail = () => vectorscope.options({bgColor:`rgba(0,0,0,${trail})`})
+
+  let perspective = 0
+  const setPerspective = () => oscillators.forEach(o => o.setPhase2(perspective))
 
 </script>
 
@@ -90,6 +101,10 @@
         <option value="dots">dots</option>
         <option value="lines">lines</option>
       </select>
+      <input type="range" min=0 max=10 step=0.000001 on:input={setScale} bind:value={scale} />
+      <input type="range" min=0 max=1 step=0.000001 on:input={setThickness} bind:value={thickness} />
+      <input type="range" min=0 max=1 step=0.000001 on:input={setTrail} bind:value={trail} />
+      <input type="range" min=0 max=1 step=0.000001 on:input={setPerspective} bind:value={perspective} />
       <canvas bind:this={canvas} width={width} height={height}></canvas>
     </div>
     <div id="panel">
@@ -138,7 +153,10 @@
   top: 60px;
   left: 10px;
 }
-#canvasWrap canvas {
+canvas {
+  position: fixed;
+  top: 60px;
+  left: 10px;
   opacity: 0.5;
   pointer-events: none;
   /* z-index: -1; */
