@@ -9,6 +9,7 @@ const Oscillator = (audio) => {
   let amFrequency = 0
   let phase = 0
   let phase2 = 0
+  let phase3 = 0
 
   // dynamically add stereoscopic oscillator pairs via synth UI
   const oscL = audio.createOscillator()
@@ -55,7 +56,12 @@ const Oscillator = (audio) => {
     phase2 = x
     let f = oscL2.frequency.value
     delayL2.delayTime.value = f == 0 ? 0 : phase2/oscL2.frequency.value
-    delayR2.delayTime.value = f == 0 ? 0 : -phase2/oscR2.frequency.value
+  }
+
+  const setPhase3 = x => {
+    phase3 = x
+    let f = oscR2.frequency.value
+    delayR2.delayTime.value = f == 0 ? 0 : phase3/oscR2.frequency.value
   }
 
   const setAM = (x) => {
@@ -84,6 +90,7 @@ const Oscillator = (audio) => {
     oscR2.frequency.value = frequency
     setPhase(phase)
     setPhase2(phase2)
+    setPhase3(phase3)
   }
 
   const setDetune = (x) => {
@@ -102,6 +109,7 @@ const Oscillator = (audio) => {
     oscR2.frequency.value = frequency + finetune
     setPhase(phase)
     setPhase2(phase2)
+    setPhase3(phase3)
   }
 
   const start = () => {
@@ -149,12 +157,13 @@ const Oscillator = (audio) => {
 
   return {
 
-    frequency, detune, finetune, phase, phase2, volume, type,
+    frequency, detune, finetune, phase, phase2, phase3, volume, type,
 
     connect,
     disconnect,
     setPhase,
     setPhase2,
+    setPhase3,
     setAM,
     setType,
     setVolume,

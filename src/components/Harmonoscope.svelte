@@ -21,7 +21,7 @@
       style: 'dots',
       thickness: 1,
       color: '#FFFFFF',
-      bgColor: 'rgba(0,0,0,0.33)'
+      bgColor: 'rgba(0,0,0,1)'
       // trail: options.trail || 1
     })
     vectorscope.draw()
@@ -91,6 +91,12 @@
   let perspective = 0
   const setPerspective = () => oscillators.forEach(o => o.setPhase2(perspective))
 
+  let distance = 0
+  const setDistance = () => oscillators.forEach(o => o.setPhase3(distance))
+
+  // let lightSpeed = 0
+  // const setLightSpeed = () => oscillators.forEach(o => o.setFrequency3(lightSpeed))
+
 </script>
 
 <harmonoscope>
@@ -102,9 +108,11 @@
         <option value="lines">lines</option>
       </select>
       <input type="range" min=0 max=10 step=0.000001 on:input={setScale} bind:value={scale} />
-      <input type="range" min=0 max=1 step=0.000001 on:input={setThickness} bind:value={thickness} />
+      <!-- <input type="range" min=0 max=1 step=0.000001 on:input={setThickness} bind:value={thickness} /> -->
       <input type="range" min=0 max=1 step=0.000001 on:input={setTrail} bind:value={trail} />
       <input type="range" min=0 max=1 step=0.000001 on:input={setPerspective} bind:value={perspective} />
+      <input type="range" min=0 max=1 step=0.000001 on:input={setDistance} bind:value={distance} />
+      <!-- <input type="range" min=0 max=1000 step=0.000001 on:input={setLightSpeed} bind:value={lightSpeed} /> -->
       <canvas bind:this={canvas} width={width} height={height}></canvas>
     </div>
     <div id="panel">
