@@ -95,7 +95,8 @@ const Vectorscope = (audio, canvas, _options={}) => {
         canvasCtx.lineTo(x,y)
       } else if(opts.style == 'dots') {
         canvasCtx.beginPath()
-        canvasCtx.arc(x, y, (d/256)*10, 0, 2 * Math.PI)
+        // canvasCtx.arc(x, y, (d/256)*10, 0, 2 * Math.PI)
+        canvasCtx.arc(x, y, 1, 0, 2 * Math.PI)
         // canvasCtx.fillStyle = `rgba(255,255,255,${c/256})`
         canvasCtx.fillStyle = `hsl(255, 100%, ${(c/256)*100}%)`
         canvasCtx.fill()

@@ -118,7 +118,7 @@
     <div id="panel">
       <span id="title">Harmonoscope</span>
       <button id="addOsc" on:click={addOsc}>Add Oscillator</button>
-      <a id="link"></a>
+      <!-- <a id="link"></a> -->
       <button id="saveImg" on:click={saveImg}>Snapshot</button>
       <button id="gifStart" on:click={gifStart}>Start Gif</button>
       <button id="gifStop" on:click={gifStop}>End Gif</button>
@@ -165,7 +165,7 @@ canvas {
   position: fixed;
   top: 60px;
   left: 10px;
-  opacity: 0.5;
+  opacity: 1;
   pointer-events: none;
   /* z-index: -1; */
 }
